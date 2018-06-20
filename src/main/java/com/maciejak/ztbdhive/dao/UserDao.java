@@ -91,6 +91,12 @@ public class UserDao implements IUserDao {
 				user.getId());
 		return cnt != null && cnt > 0;
 	}
+	
+	private Integer getNextId() {
+		Integer max = hiveJdbcTemplate.queryForObject(
+				"SELECT max(id) FROM student", Integer.class);
+		return max != null ? max + 1 : 1;
+	}
 
 	public class UserRowMapper implements RowMapper<User> {
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
