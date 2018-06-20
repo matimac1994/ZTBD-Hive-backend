@@ -24,7 +24,6 @@ public class UserController {
     }
 
     @PostMapping
-    @PutMapping
     @ResponseBody
     public ResponseEntity<User> saveUser(@RequestBody User user){
         return ResponseEntity.ok(userService.createOrUpdateUser(user));
@@ -33,14 +32,14 @@ public class UserController {
     @GetMapping("/{id}")
     @ResponseBody
     public ResponseEntity<User> getAUserById(
-            @PathVariable("id") Long userId
+            @PathVariable("id") Integer userId
     ){
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletetAUserById(
-            @PathVariable("id") Long userId
+            @PathVariable("id") Integer userId
     ){
         userService.deleteUserById(userId);
         return ResponseEntity.ok().build();

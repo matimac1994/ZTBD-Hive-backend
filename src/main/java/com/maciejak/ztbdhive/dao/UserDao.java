@@ -32,7 +32,7 @@ public class UserDao implements IUserDao {
 	}
 
 	@Override
-	public User getUser(Long id) {
+	public User getUser(Integer id) {
 		User user = hiveJdbcTemplate.queryForObject(
 				"select * from student where id = ?", new Object[] { id },
 				new UserRowMapper());
@@ -43,20 +43,17 @@ public class UserDao implements IUserDao {
 	public User addUser(User user) {
 		final String INSERT_SQL = "insert into student (firstName, lastName, age, city) values(?, ?, ?, ?)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		hiveJdbcTemplate.update(new PreparedStatementCreator() {
-			public PreparedStatement createPreparedStatement(
-					Connection connection) throws SQLException {
-				PreparedStatement ps = connection.prepareStatement(INSERT_SQL,
-						new String[] { "id" });
-				ps.setString(1, user.getFirstName());
-				ps.setString(2, user.getLastName());
-				ps.setInt(3, user.getAge());
-				ps.setString(4, user.getCity());
-				return ps;
-			}
-		}, keyHolder);
+		hiveJdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(INSERT_SQL,
+                    new String[] { "id" });
+            ps.setString(1, user.getFirstName());
+            ps.setString(2, user.getLastName());
+            ps.setInt(3, user.getAge());
+            ps.setString(4, user.getCity());
+            return ps;
+        }, keyHolder);
 
-		return getUser(keyHolder.getKey().longValue());
+		return getUser(keyHolder.getKey().intValue());
 	}
 
 	@Override
@@ -70,7 +67,7 @@ public class UserDao implements IUserDao {
 				ps.setString(2, user.getLastName());
 				ps.setInt(3, user.getAge());
 				ps.setString(4, user.getCity());
-				ps.setLong(5, user.getId());
+				ps.setInt(5, user.getId());
 				return ps;
 			}
 		});
@@ -79,7 +76,7 @@ public class UserDao implements IUserDao {
 	}
 
 	@Override
-	public void deleteUser(Long id) {
+	public void deleteUser(Integer id) {
 		String query = "delete from student where id = " + id;
 		hiveJdbcTemplate.update(query);
 	}
@@ -95,7 +92,7 @@ public class UserDao implements IUserDao {
 	public class UserRowMapper implements RowMapper<User> {
 		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 			User u = new User();
-			u.setId(rs.getLong("id"));
+			u.setId(rs.getInt("id"));
 			u.setFirstName(rs.getString("firstName"));
 			u.setLastName(rs.getString("lastName"));
 			u.setAge(rs.getInt("age"));
