@@ -39,8 +39,7 @@ public class HiveConfig {
 
         Connection connection = dataSource.getConnection();
         Statement statement = connection.createStatement();
-        statement.execute("drop table if EXISTS tabelka");
-        statement.execute("create table tabelka (key int, value string)");
+        statement.execute("CREATE TABLE IF NOT EXISTS student (id int, firsName String, lastName String, age int, city String)");
 
         return dataSource;
 

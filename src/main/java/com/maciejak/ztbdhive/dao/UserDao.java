@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,19 +24,25 @@ public class UserDao implements IUserDao {
 	@Qualifier("hiveJdbcTemplate")
 	private JdbcTemplate hiveJdbcTemplate;
 
-	@Override
-	public List<User> getAllUsers() {
-		List<User> users = new ArrayList<>();
-		// TODO
-
-		StringBuilder builder = new StringBuilder();
-
-		return users;
-	}
+    @Override
+    public List<User> getAllUsers(){
+    	List<User> users = new ArrayList<>();
+        List<Map<String, Object>> userRows = hiveJdbcTemplate.queryForList("select * from student");
+        for (Map row: userRows){
+        	User u = new User();
+        	u.setId((Long) row.get("id"));
+			u.setFirstName((String) row.get("firstName"));
+			u.setLastName((String) row.get("lastName"));
+			u.setAge((Integer) row.get("age"));
+			u.setCity((String) row.get("city"));
+			users.add(u);
+		}
+        return users;
+    }
 
 	@Override
 	public User getUser(Long id) {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 
