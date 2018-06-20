@@ -2,15 +2,15 @@ package com.maciejak.ztbdhive.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
@@ -24,26 +24,19 @@ public class UserDao implements IUserDao {
 	@Qualifier("hiveJdbcTemplate")
 	private JdbcTemplate hiveJdbcTemplate;
 
-    @Override
-    public List<User> getAllUsers(){
-    	List<User> users = new ArrayList<>();
-        List<Map<String, Object>> userRows = hiveJdbcTemplate.queryForList("select * from student");
-        for (Map row: userRows){
-        	User u = new User();
-        	u.setId((Long) row.get("id"));
-			u.setFirstName((String) row.get("firstName"));
-			u.setLastName((String) row.get("lastName"));
-			u.setAge((Integer) row.get("age"));
-			u.setCity((String) row.get("city"));
-			users.add(u);
-		}
-        return users;
-    }
+	@Override
+	public List<User> getAllUsers() {
+		String query = "select * from student";
+		List<User> users = hiveJdbcTemplate.query(query, new UserRowMapper());
+		return users;
+	}
 
 	@Override
 	public User getUser(Long id) {
-
-		return null;
+		User user = hiveJdbcTemplate.queryForObject(
+				"select * from student where id = ?", new Object[] { id },
+				new UserRowMapper());
+		return user;
 	}
 
 	@Override
@@ -93,8 +86,22 @@ public class UserDao implements IUserDao {
 
 	@Override
 	public boolean userExists(User user) {
-		// TODO Auto-generated method stub
-		return false;
+		Integer cnt = hiveJdbcTemplate.queryForObject(
+				"SELECT count(*) FROM student WHERE id = ?", Integer.class,
+				user.getId());
+		return cnt != null && cnt > 0;
+	}
+
+	public class UserRowMapper implements RowMapper<User> {
+		public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+			User u = new User();
+			u.setId(rs.getLong("id"));
+			u.setFirstName(rs.getString("firstName"));
+			u.setLastName(rs.getString("lastName"));
+			u.setAge(rs.getInt("age"));
+			u.setCity(rs.getString("city"));
+			return u;
+		}
 	}
 
 }
