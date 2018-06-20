@@ -41,19 +41,19 @@ public class UserDao implements IUserDao {
 
 	@Override
 	public User addUser(User user) {
-		final String INSERT_SQL = "insert into student (firstName, lastName, age, city) values(?, ?, ?, ?)";
-		KeyHolder keyHolder = new GeneratedKeyHolder();
+		Integer nextId = getNextId();
+		final String INSERT_SQL = "insert into student (id, firstName, lastName, age, city) values(?, ?, ?, ?, ?)";
 		hiveJdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(INSERT_SQL,
-                    new String[] { "id" });
-            ps.setString(1, user.getFirstName());
-            ps.setString(2, user.getLastName());
-            ps.setInt(3, user.getAge());
-            ps.setString(4, user.getCity());
+            PreparedStatement ps = connection.prepareStatement(INSERT_SQL);
+            ps.setInt(1, nextId);
+            ps.setString(2, user.getFirstName());
+            ps.setString(3, user.getLastName());
+            ps.setInt(4, user.getAge());
+            ps.setString(5, user.getCity());
             return ps;
-        }, keyHolder);
+        });
 
-		return getUser(keyHolder.getKey().intValue());
+		return getUser(nextId);
 	}
 
 	@Override
