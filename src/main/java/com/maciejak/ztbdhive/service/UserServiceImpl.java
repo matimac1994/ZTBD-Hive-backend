@@ -1,30 +1,41 @@
 package com.maciejak.ztbdhive.service;
 
-import com.maciejak.ztbdhive.model.User;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.maciejak.ztbdhive.dao.IUserDao;
+import com.maciejak.ztbdhive.model.User;
 
 @Service
 public class UserServiceImpl implements UserService {
+	
+	@Autowired
+	IUserDao userDao;
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        return userDao.getAllUsers();
     }
 
     @Override
     public void deleteUserById(Long userId) {
-
+    	userDao.deleteUser(userId);
     }
 
     @Override
     public User createOrUpdateUser(User user) {
-        return null;
+    	User retUser = null;
+    	if (userDao.userExists(user))
+    		retUser = userDao.editUser(user);
+    	else 
+    		retUser = userDao.addUser(user);
+        return retUser;
     }
 
     @Override
     public User getUserById(Long userId) {
-        return null;
+        return userDao.getUser(userId);
     }
 }
