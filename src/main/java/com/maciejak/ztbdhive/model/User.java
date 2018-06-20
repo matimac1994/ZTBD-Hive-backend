@@ -1,7 +1,7 @@
 package com.maciejak.ztbdhive.model;
 
 public class User {
-    private Long id;
+    private Integer id;
     private String firstName;
     private String lastName;
     private Integer age;
@@ -10,7 +10,7 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String firstName, String lastName, Integer age, String city) {
+    public User(Integer id, String firstName, String lastName, Integer age, String city) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -18,11 +18,11 @@ public class User {
         this.city = city;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
